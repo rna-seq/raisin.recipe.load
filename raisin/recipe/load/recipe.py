@@ -1,3 +1,5 @@
+import database
+
 class Recipe(object):
 
     def __init__(self, buildout, name, options):
@@ -6,7 +8,7 @@ class Recipe(object):
         self.options = options
 
     def install(self):
-        pass
-        
+        database.main(self.options, self.buildout)
+
     def update(self):
         return self.install()
