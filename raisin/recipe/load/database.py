@@ -1,6 +1,6 @@
 import csv
 
-PATH = "../extract/workspace/%s"
+PATH = "../transformation/workspace/%s"
 
 def read_csv(file_name):
     return csv.DictReader(open(PATH % file_name, 'r'), 
@@ -30,7 +30,7 @@ def main(options, buildout):
                ]
 
     template = '\t'.join(['%s'] * len(headers)) + '\n'
-    output_file = open("database.csv", "w")
+    output_file = open("workspace/database.csv", "w")
     output_file.write('\t'.join(headers) + '\n')
 
     accession_id_for_file = {}
