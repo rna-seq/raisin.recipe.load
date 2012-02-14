@@ -109,7 +109,7 @@ def main(staging):
             accession['readType'],
             read_length['read_length'],
             accession['qualities'],
-            afile['file_location'],
+            file_location,
             accession['dataType'],
             accession['rnaExtract'],
             accession['localization'],
@@ -118,6 +118,3 @@ def main(staging):
             view['view'],
             accession['type']
             ))
-
-if __name__ == '__main__':
-    main()
