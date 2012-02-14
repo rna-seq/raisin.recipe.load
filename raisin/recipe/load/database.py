@@ -1,24 +1,23 @@
 import os
 import csv
 
-PATH = "../transformation/workspace/%s"
-
 
 def read_csv(staging, file_name):
     path = os.path.join(staging, file_name)
     read = open(path, 'r')
     items = []
     for item in csv.DictReader(read, delimiter='\t', skipinitialspace=True):
-         items.append(item)
+        items.append(item)
     return items
-    
-    
+
+
 def get_experiments(data):
     experiments = {}
     for experiment in data['experiments']:
         key = (experiment['project_id'], experiment['accession_id'])
         experiments[key] = experiment
     return experiments
+
 
 def get_accessions(data):
     accessions = {}
@@ -27,15 +26,17 @@ def get_accessions(data):
         accessions[key] = accession
     return accessions
 
+
 def get_view(data):
     views = {}
     for view in data['view']:
-        key = (view['project_id'], 
+        key = (view['project_id'],
                view['accession_id'],
                view['file_location']
               )
         views[key] = view
     return  views
+
 
 def get_files(data):
     files = {}
@@ -43,6 +44,7 @@ def get_files(data):
         key = (file['project_id'], file['accession_id'], file['file_location'])
         files[key] = file
     return files
+
 
 def get_read_lengths(data):
     read_lengths = {}
@@ -96,23 +98,24 @@ def main(staging):
         accession = accessions[(project_id, accession_id)]
         view = views[key]
         read_length = read_lengths[(project_id, accession_id)]
-        
-        output_file.write(template % (file['project_id'],
-                                      file['accession_id'],
-                                      accession['species'], 
-                                      accession['cell'], 
-                                      accession['readType'],
-                                      read_length['read_length'],
-                                      accession['qualities'],
-                                      file['file_location'],
-                                      accession['dataType'],
-                                      accession['rnaExtract'],
-                                      accession['localization'],
-                                      experiment['replicate_id'],
-                                      accession['lab'],
-                                      view['view'],
-                                      accession['type']
-                                      ))
+
+        output_file.write(template % (
+            file['project_id'],
+            file['accession_id'],
+            accession['species'],
+            accession['cell'],
+            accession['readType'],
+            read_length['read_length'],
+            accession['qualities'],
+            file['file_location'],
+            accession['dataType'],
+            accession['rnaExtract'],
+            accession['localization'],
+            experiment['replicate_id'],
+            accession['lab'],
+            view['view'],
+            accession['type']
+            ))
 
 if __name__ == '__main__':
     main()
