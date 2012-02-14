@@ -40,11 +40,11 @@ def get_view(data):
 
 def get_files(data):
     files = {}
-    for item in data['files']:
-        key = (item['project_id'],
-               item['accession_id'],
-               item['file_location'])
-        files[key] = item
+    for afile in data['files']:
+        key = (afile['project_id'],
+               afile['accession_id'],
+               afile['file_location'])
+        files[key] = afile
     return files
 
 
@@ -94,7 +94,7 @@ def main(staging):
     files = get_files(data)
     read_lengths = get_read_lengths(data)
 
-    for key, file in files.items():
+    for key, afile in files.items():
         project_id, accession_id, file_location = key
         experiment = experiments[(project_id, accession_id)]
         accession = accessions[(project_id, accession_id)]
@@ -102,14 +102,14 @@ def main(staging):
         read_length = read_lengths[(project_id, accession_id)]
 
         output_file.write(template % (
-            file['project_id'],
-            file['accession_id'],
+            afile['project_id'],
+            afile['accession_id'],
             accession['species'],
             accession['cell'],
             accession['readType'],
             read_length['read_length'],
             accession['qualities'],
-            file['file_location'],
+            afile['file_location'],
             accession['dataType'],
             accession['rnaExtract'],
             accession['localization'],
