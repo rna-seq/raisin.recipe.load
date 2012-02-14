@@ -8,7 +8,8 @@ class Recipe(object):
         self.options = options
 
     def install(self):
-        database.main(self.options, self.buildout)
+        staging = self.buildout['transform']['staging']
+        database.main(staging)
 
     def update(self):
         return self.install()
