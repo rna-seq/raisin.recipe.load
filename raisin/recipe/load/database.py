@@ -40,9 +40,11 @@ def get_view(data):
 
 def get_files(data):
     files = {}
-    for file in data['files']:
-        key = (file['project_id'], file['accession_id'], file['file_location'])
-        files[key] = file
+    for item in data['files']:
+        key = (item['project_id'],
+               item['accession_id'],
+               item['file_location'])
+        files[key] = item
     return files
 
 
