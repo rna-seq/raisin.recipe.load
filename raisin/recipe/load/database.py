@@ -1,12 +1,18 @@
+import os
 import csv
 
 PATH = "../transformation/workspace/%s"
 
-def read_csv(file_name):
-    return [item for item in csv.DictReader(open(PATH % file_name, 'r'), 
-                                            delimiter='\t', 
-                                            skipinitialspace=True)]
 
+def read_csv(staging, file_name):
+    path = os.path.join(staging, file_name)
+    read = open(path, 'r')
+    items = []
+    for item in csv.DictReader(read, delimiter='\t', skipinitialspace=True):
+         items.append(item)
+    return items
+    
+    
 def get_experiments(data):
     experiments = {}
     for experiment in data['experiments']:
@@ -46,14 +52,14 @@ def get_read_lengths(data):
     return read_lengths
 
 
-def main(options, buildout):
-    data = {'accessions': read_csv("accessions.csv"),
-            'profiles': read_csv("profiles.csv"),
-            'annotations':  read_csv("annotations.csv"),
-            'files': read_csv("files.csv"),
-            'experiments': read_csv("experiments.csv"),
-            'read_length': read_csv("read_length.csv"),
-            'view': read_csv("view.csv")
+def main(staging):
+    data = {'accessions': read_csv(staging, "accessions.csv"),
+            'profiles': read_csv(staging, "profiles.csv"),
+            'annotations':  read_csv(staging, "annotations.csv"),
+            'files': read_csv(staging, "files.csv"),
+            'experiments': read_csv(staging, "experiments.csv"),
+            'read_length': read_csv(staging, "read_length.csv"),
+            'view': read_csv(staging, "view.csv"),
            }
 
     headers = ["project_id",
@@ -74,7 +80,8 @@ def main(options, buildout):
                ]
 
     template = '\t'.join(['%s'] * len(headers)) + '\n'
-    output_file = open("workspace/database.csv", "w")
+    path = os.path.join(staging, "database.csv")
+    output_file = open(path, "w")
     output_file.write('\t'.join(headers) + '\n')
 
     experiments = get_experiments(data)
