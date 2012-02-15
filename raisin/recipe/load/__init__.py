@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Recipe apache"""
 
-from raisin.recipe.load.database import database
+from raisin.recipe.load import database
 
 
 class Recipe(object):
