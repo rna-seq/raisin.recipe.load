@@ -1,6 +1,6 @@
 import os
 import csv
-
+import sqlite3
 
 def read_csv(staging, file_name):
     path = os.path.join(staging, file_name)
@@ -94,6 +94,13 @@ def main(staging):
     files = get_files(data)
     read_lengths = get_read_lengths(data)
 
+    path = os.path.join(staging, "database.db")
+    if os.path.exists(path):
+        os.remove(path)
+    conn = sqlite3.connect(path)
+    c = conn.cursor()
+    c.execute('''create table files (%s)''' % ",".join(["%s text" % h for h in headers]))
+
     for key, afile in files.items():
         project_id, accession_id, file_location = key
         experiment = experiments[(project_id, accession_id)]
@@ -101,20 +108,47 @@ def main(staging):
         view = views[key]
         read_length = read_lengths[(project_id, accession_id)]
 
-        output_file.write(template % (
-            afile['project_id'],
-            afile['accession_id'],
-            accession['species'],
-            accession['cell'],
-            accession['readType'],
-            read_length['read_length'],
-            accession['qualities'],
-            file_location,
-            accession['dataType'],
-            accession['rnaExtract'],
-            accession['localization'],
-            experiment['replicate_id'],
-            accession['lab'],
-            view['view'],
-            accession['type']
-            ))
+        row = (afile['project_id'],
+               afile['accession_id'],
+               accession['species'],
+               accession['cell'],
+               accession['readType'],
+               read_length['read_length'],
+               accession['qualities'],
+               file_location,
+               accession['dataType'],
+               accession['rnaExtract'],
+               accession['localization'],
+               experiment['replicate_id'],
+               accession['lab'],
+               view['view'],
+               accession['type']
+               )
+        output_file.write(template % row)
+        c.execute("""insert into files values %s""" % str(row))
+    
+    conn.commit()
+    c.close()
+     
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
