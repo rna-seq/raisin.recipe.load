@@ -56,15 +56,7 @@ def get_read_lengths(data):
     return read_lengths
 
 
-def main(staging):
-    data = {'accessions': read_csv(staging, "accessions.csv"),
-            'profiles': read_csv(staging, "profiles.csv"),
-            'annotations':  read_csv(staging, "annotations.csv"),
-            'files': read_csv(staging, "files.csv"),
-            'experiments': read_csv(staging, "experiments.csv"),
-            'read_length': read_csv(staging, "read_length.csv"),
-            'view': read_csv(staging, "view.csv"),
-           }
+def produce_database(data, staging):
 
     headers = ["project_id",
                "accession_id",
@@ -94,20 +86,12 @@ def main(staging):
     files = get_files(data)
     read_lengths = get_read_lengths(data)
 
-    path = os.path.join(staging, "database.db")
-    if os.path.exists(path):
-        os.remove(path)
-    conn = sqlite3.connect(path)
-    c = conn.cursor()
-    c.execute('''create table files (%s)''' % ",".join(["%s text" % h for h in headers]))
-
     for key, afile in files.items():
         project_id, accession_id, file_location = key
         experiment = experiments[(project_id, accession_id)]
         accession = accessions[(project_id, accession_id)]
         view = views[key]
         read_length = read_lengths[(project_id, accession_id)]
-
         row = (afile['project_id'],
                afile['accession_id'],
                accession['species'],
@@ -125,30 +109,45 @@ def main(staging):
                accession['type']
                )
         output_file.write(template % row)
-        c.execute("""insert into files values %s""" % str(row))
-    
-    conn.commit()
-    c.close()
-     
+    output_file.close()
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
+def write_sqlite3_table(cursor, csv_file_path, table_name):
+    lines = open(csv_file_path, 'r').readlines()
+    headers = lines[0].strip('\n').split('\t')
+    cursor.execute('''create table %s (%s)''' % (
+        table_name,
+        ",".join(["%s text" % h for h in headers]))
+        )
+    for line in lines[1:]:
+        row = line.strip('\n').split('\t')
+        cursor.execute("""insert into %s values %s""" % (
+            table_name,
+            str(tuple(row)))
+            )
+
+
+def produce_sqlite3_database(data, staging):
+    output = os.path.join(staging, "database.db")
+    if os.path.exists(output):
+        os.remove(output)
+    connection = sqlite3.connect(output)
+    cursor = connection.cursor()
+    write_sqlite3_table(cursor, os.path.join(staging, 'database.csv'), 'files')
+    write_sqlite3_table(cursor, os.path.join(staging, 'accessions.csv'), 'accessions')
+    connection.commit()
+    cursor.close()
+
+
+def main(staging):
+    data = {'accessions': read_csv(staging, "accessions.csv"),
+            'profiles': read_csv(staging, "profiles.csv"),
+            'annotations':  read_csv(staging, "annotations.csv"),
+            'files': read_csv(staging, "files.csv"),
+            'experiments': read_csv(staging, "experiments.csv"),
+            'read_length': read_csv(staging, "read_length.csv"),
+            'view': read_csv(staging, "view.csv"),
+           }
+
+    produce_database(data, staging)
+    produce_sqlite3_database(data, staging)
