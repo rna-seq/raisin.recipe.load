@@ -159,6 +159,58 @@ def produce_accessions(data, database):
         output_file.write(template % row)
     output_file.close()
 
+def produce_experiments(data, database):
+
+    headers = ["project_id",
+               "lab",
+               "cell",
+               "localization",
+               "rnaExtract",
+               "partition",
+               "annotatation_version",
+               "read_length",
+               "paired",
+               "number_of_replicates"
+               ]
+
+    template = '\t'.join(['%s'] * len(headers)) + '\n'
+    path = os.path.join(database, "experiments.csv")
+    output_file = open(path, "w")
+    output_file.write('\t'.join(headers) + '\n')
+
+    experiments = get_experiments(data)
+    accessions = get_accessions(data)
+    read_lengths = get_read_lengths(data)
+
+    results = {}
+    for key, accession in accessions.items():
+        project_id, accession_id = key
+        experiment = experiments[(project_id, accession_id)]
+        accession = accessions[(project_id, accession_id)]
+        read_length = read_lengths[(project_id, accession_id)]
+        annotation_version = ""
+        paired = "0"
+        partition = ""
+        parameters = (accession['project_id'],
+                      accession['lab'],
+                      accession['cell'],
+                      accession['localization'],
+                      accession['rnaExtract'],
+                      partition,
+                      annotation_version,
+                      read_length['read_length'],
+                      paired)
+        if results.has_key(parameters):
+            results[parameters] +=1
+        else:
+            results[parameters] =1
+
+    for parameters, number_of_replicates in results.items():
+        row = list(parameters)
+        row.append(number_of_replicates)
+        output_file.write(template % tuple(row))
+    output_file.close()
+
 
 def write_sqlite3_table(cursor, csv_file_path, table_name):
     lines = open(csv_file_path, 'r').readlines()
@@ -183,6 +235,7 @@ def produce_sqlite3_database(data, database):
     cursor = connection.cursor()
     write_sqlite3_table(cursor, os.path.join(database, 'files.csv'), 'files')
     write_sqlite3_table(cursor, os.path.join(database, 'accessions.csv'), 'accessions')
+    write_sqlite3_table(cursor, os.path.join(database, 'experiments.csv'), 'experiments')
     connection.commit()
     cursor.close()
 
@@ -199,4 +252,5 @@ def main(staging, database):
 
     produce_files(data, database)
     produce_accessions(data, database)
+    produce_experiments(data, database)
     produce_sqlite3_database(data, database)
