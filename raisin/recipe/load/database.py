@@ -56,7 +56,7 @@ def get_read_lengths(data):
     return read_lengths
 
 
-def produce_database(data, staging):
+def produce_files(data, database):
 
     headers = ["project_id",
                "accession_id",
@@ -76,7 +76,7 @@ def produce_database(data, staging):
                ]
 
     template = '\t'.join(['%s'] * len(headers)) + '\n'
-    path = os.path.join(staging, "database.csv")
+    path = os.path.join(database, "files.csv")
     output_file = open(path, "w")
     output_file.write('\t'.join(headers) + '\n')
 
@@ -111,6 +111,54 @@ def produce_database(data, staging):
         output_file.write(template % row)
     output_file.close()
 
+def produce_accessions(data, database):
+
+    headers = ["project_id",
+               "accession_id",
+               "species",
+               "cell",
+               "readType",
+               "read_length",
+               "qualities",
+               "gender",
+               "dataType",
+               "rnaExtract",
+               "localization",
+               "replicate",
+               "lab",
+               ]
+
+    template = '\t'.join(['%s'] * len(headers)) + '\n'
+    path = os.path.join(database, "accessions.csv")
+    output_file = open(path, "w")
+    output_file.write('\t'.join(headers) + '\n')
+
+    experiments = get_experiments(data)
+    accessions = get_accessions(data)
+    read_lengths = get_read_lengths(data)
+
+    for key, accession in accessions.items():
+        project_id, accession_id = key
+        experiment = experiments[(project_id, accession_id)]
+        accession = accessions[(project_id, accession_id)]
+        read_length = read_lengths[(project_id, accession_id)]
+        row = (accession['project_id'],
+               accession['accession_id'],
+               accession['species'],
+               accession['cell'],
+               accession['readType'],
+               read_length['read_length'],
+               accession['qualities'],
+               '',
+               accession['dataType'],
+               accession['rnaExtract'],
+               accession['localization'],
+               experiment['replicate_id'],
+               accession['lab'],
+               )
+        output_file.write(template % row)
+    output_file.close()
+
 
 def write_sqlite3_table(cursor, csv_file_path, table_name):
     lines = open(csv_file_path, 'r').readlines()
@@ -127,19 +175,19 @@ def write_sqlite3_table(cursor, csv_file_path, table_name):
             )
 
 
-def produce_sqlite3_database(data, staging):
-    output = os.path.join(staging, "database.db")
+def produce_sqlite3_database(data, database):
+    output = os.path.join(database, "database.db")
     if os.path.exists(output):
         os.remove(output)
     connection = sqlite3.connect(output)
     cursor = connection.cursor()
-    write_sqlite3_table(cursor, os.path.join(staging, 'database.csv'), 'files')
-    write_sqlite3_table(cursor, os.path.join(staging, 'accessions.csv'), 'accessions')
+    write_sqlite3_table(cursor, os.path.join(database, 'files.csv'), 'files')
+    write_sqlite3_table(cursor, os.path.join(database, 'accessions.csv'), 'accessions')
     connection.commit()
     cursor.close()
 
 
-def main(staging):
+def main(staging, database):
     data = {'accessions': read_csv(staging, "accessions.csv"),
             'profiles': read_csv(staging, "profiles.csv"),
             'annotations':  read_csv(staging, "annotations.csv"),
@@ -149,5 +197,6 @@ def main(staging):
             'view': read_csv(staging, "view.csv"),
            }
 
-    produce_database(data, staging)
-    produce_sqlite3_database(data, staging)
+    produce_files(data, database)
+    produce_accessions(data, database)
+    produce_sqlite3_database(data, database)
