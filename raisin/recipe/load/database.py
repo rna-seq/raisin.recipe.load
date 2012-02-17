@@ -159,9 +159,11 @@ def produce_accessions(data, database):
         output_file.write(template % row)
     output_file.close()
 
-def produce_experiments(data, database):
+def produce_experiments(data, database, project_parameters):
 
     headers = ["project_id",
+               "parameter_list",
+               "parameter_values",
                "lab",
                "cell",
                "localization",
@@ -191,15 +193,36 @@ def produce_experiments(data, database):
         annotation_version = ""
         paired = "0"
         partition = ""
-        parameters = (accession['project_id'],
-                      accession['lab'],
-                      accession['cell'],
-                      accession['localization'],
-                      accession['rnaExtract'],
-                      partition,
-                      annotation_version,
-                      read_length['read_length'],
-                      paired)
+
+        info = {'project_id': accession['project_id'],
+                'lab': accession['lab'],
+                'cell': accession['cell'],
+                'localization': accession['localization'],
+                'rnaExtract': accession['rnaExtract'],
+                'partition': partition,
+                'annotation_version': annotation_version,
+                'read_length': read_length['read_length'],
+                'paired': paired
+               }
+
+        parameter_list = []
+        parameter_values = []
+        
+        for parameter in project_parameters[project_id].split('\n'):
+            parameter_list.append(parameter)
+            parameter_values.append(info[parameter])
+        
+        parameters = (info['project_id'],
+                      '-'.join(parameter_list),
+                      '-'.join(parameter_values),
+                      info['lab'],
+                      info['cell'],
+                      info['localization'],
+                      info['rnaExtract'],
+                      info['partition'],
+                      info['annotation_version'],
+                      info['read_length'],
+                      info['paired'])
         if results.has_key(parameters):
             results[parameters] +=1
         else:
@@ -240,7 +263,10 @@ def produce_sqlite3_database(data, database):
     cursor.close()
 
 
-def main(staging, database):
+def main(buildout):
+    staging = buildout['transform']['staging']
+    database = buildout['load']['database']
+    project_parameters = buildout['project_parameters']
     data = {'accessions': read_csv(staging, "accessions.csv"),
             'profiles': read_csv(staging, "profiles.csv"),
             'annotations':  read_csv(staging, "annotations.csv"),
@@ -252,5 +278,5 @@ def main(staging, database):
 
     produce_files(data, database)
     produce_accessions(data, database)
-    produce_experiments(data, database)
+    produce_experiments(data, database, project_parameters)
     produce_sqlite3_database(data, database)
