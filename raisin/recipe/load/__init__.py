@@ -12,8 +12,8 @@ class Recipe(object):
         self.options = options
 
     def install(self):
-        staging = self.buildout['transform']['staging']
-        database.main(staging)
+        database.main(self.buildout['transform']['staging'],
+                      self.buildout['load']['database'])
 
     def update(self):
         return self.install()
