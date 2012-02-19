@@ -235,12 +235,18 @@ def produce_experiments(data, database, project_parameters):
     output_file.close()
 
 
-def write_sqlite3_table(cursor, csv_file_path, table_name):
+def write_sqlite3_table(cursor, csv_file_path, table_name, integer):
     lines = open(csv_file_path, 'r').readlines()
     headers = lines[0].strip('\n').split('\t')
+    types = []
+    for header in headers:
+        if header in integer:
+            types.append("%s integer" % header)
+        else:
+            types.append("%s text" % header)
     cursor.execute('''create table %s (%s)''' % (
         table_name,
-        ",".join(["%s text" % h for h in headers]))
+        ",".join(types))
         )
     for line in lines[1:]:
         row = line.strip('\n').split('\t')
@@ -256,9 +262,21 @@ def produce_sqlite3_database(data, database):
         os.remove(output)
     connection = sqlite3.connect(output)
     cursor = connection.cursor()
-    write_sqlite3_table(cursor, os.path.join(database, 'files.csv'), 'files')
-    write_sqlite3_table(cursor, os.path.join(database, 'accessions.csv'), 'accessions')
-    write_sqlite3_table(cursor, os.path.join(database, 'experiments.csv'), 'experiments')
+    write_sqlite3_table(cursor, 
+                        os.path.join(database, 'files.csv'), 
+                        'files',
+                        ["read_length", "replicate"],
+                        )
+    write_sqlite3_table(cursor, 
+                        os.path.join(database, 'accessions.csv'), 
+                        'accessions',
+                        ["read_length", "replicate"],
+                        )
+    write_sqlite3_table(cursor, 
+                        os.path.join(database, 'experiments.csv'),
+                        'experiments',
+                        ["read_length", "paired", "number_of_replicates"],
+                        )
     connection.commit()
     cursor.close()
 
