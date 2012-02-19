@@ -281,9 +281,7 @@ def produce_sqlite3_database(data, database):
     cursor.close()
 
 
-def main(buildout):
-    staging = buildout['transform']['staging']
-    database = buildout['load']['database']
+def main(buildout, staging, database):
     project_parameters = buildout['project_parameters']
     data = {'accessions': read_csv(staging, "accessions.csv"),
             'profiles': read_csv(staging, "profiles.csv"),
