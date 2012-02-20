@@ -169,7 +169,7 @@ def produce_experiments(data, database, project_parameters):
                "localization",
                "rnaExtract",
                "partition",
-               "annotatation_version",
+               "annotation_version",
                "read_length",
                "paired",
                "number_of_replicates"
