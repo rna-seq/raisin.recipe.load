@@ -26,6 +26,19 @@ def get_accessions(data):
         accessions[key] = accession
     return accessions
 
+def get_replicates(data):
+    replicates = {}
+    for replicate in data['replicates']:
+        key = (replicate['project_id'], replicate['replicate_id'])
+        replicates[key] = replicate
+    return replicates
+
+def get_annotations(data):
+    annotations = {}
+    for annotation in data['annotations']:
+        key = annotation['file_location']
+        annotations[key] = annotation
+    return annotations
 
 def get_view(data):
     views = {}
@@ -182,15 +195,19 @@ def produce_experiments(data, database, project_parameters):
 
     experiments = get_experiments(data)
     accessions = get_accessions(data)
+    annotations = get_annotations(data)
     read_lengths = get_read_lengths(data)
+    replicates = get_replicates(data)
 
     results = {}
-    for key, accession in accessions.items():
-        project_id, accession_id = key
+    for key, replicate in replicates.items():
+        project_id, replicate_id = key
+        accession_id = replicate['accession_id']
         experiment = experiments[(project_id, accession_id)]
         accession = accessions[(project_id, accession_id)]
         read_length = read_lengths[(project_id, accession_id)]
-        annotation_version = ""
+        annotation_file_location = replicate['ANNOTATION']
+        annotation_version = annotations[annotation_file_location]['version']
         paired = "0"
         partition = ""
 
@@ -290,6 +307,7 @@ def main(buildout, staging, database):
             'experiments': read_csv(staging, "experiments.csv"),
             'read_length': read_csv(staging, "read_length.csv"),
             'view': read_csv(staging, "view.csv"),
+            'replicates': read_csv(staging, "replicates.csv"),
            }
 
     produce_files(data, database)
