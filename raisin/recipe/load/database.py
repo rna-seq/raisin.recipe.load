@@ -40,6 +40,13 @@ def get_annotations(data):
         annotations[key] = annotation
     return annotations
 
+def get_runs(data):
+    runs = {}
+    for run in data['runs']:
+        key = (run['project_id'], run['run_id'])
+        runs[key] = run
+    return runs
+
 def get_view(data):
     views = {}
     for view in data['view']:
@@ -251,6 +258,48 @@ def produce_experiments(data, database, project_parameters):
         output_file.write(template % tuple(row))
     output_file.close()
 
+def produce_runs(data, database, project_parameters):
+
+    headers = ['project_id',
+               'run_id',
+               'cell',
+               'lab',
+               'localization',
+               'rnaExtract',
+               'partition',
+               'read_length',
+               'paired',
+                ]
+    
+    template = '\t'.join(['%s'] * len(headers)) + '\n'
+    path = os.path.join(database, "runs.csv")
+    output_file = open(path, "w")
+    output_file.write('\t'.join(headers) + '\n')
+
+    experiments = get_experiments(data)
+    accessions = get_accessions(data)
+    read_lengths = get_read_lengths(data)
+    replicates = get_replicates(data)
+    runs = get_runs(data)
+
+    for key, run in runs.items():
+        project_id, run_id = key
+        experiment = experiments.get((project_id, run_id), {})
+        accession = accessions.get((project_id, run_id), {})
+        read_length = read_lengths.get((project_id, run_id), {})
+        row = (run['project_id'],
+               run['run_id'],
+               run['cell'],
+               run['lab'],
+               run['localization'],
+               run['rnaExtract'],
+               run['partition'],
+               run['read_length'],
+               run['paired'],
+               )
+        output_file.write(template % row)
+    output_file.close()
+
 
 def write_sqlite3_table(cursor, csv_file_path, table_name, integer):
     lines = open(csv_file_path, 'r').readlines()
@@ -294,6 +343,11 @@ def produce_sqlite3_database(data, database):
                         'experiments',
                         ["read_length", "paired", "number_of_replicates"],
                         )
+    write_sqlite3_table(cursor, 
+                        os.path.join(database, 'runs.csv'),
+                        'runs',
+                        [],
+                        )
     connection.commit()
     cursor.close()
 
@@ -308,9 +362,11 @@ def main(buildout, staging, database):
             'read_length': read_csv(staging, "read_length.csv"),
             'view': read_csv(staging, "view.csv"),
             'replicates': read_csv(staging, "replicates.csv"),
+            'runs': read_csv(staging, "runs.csv"),
            }
 
     produce_files(data, database)
     produce_accessions(data, database)
     produce_experiments(data, database, project_parameters)
+    produce_runs(data, database, project_parameters)
     produce_sqlite3_database(data, database)
