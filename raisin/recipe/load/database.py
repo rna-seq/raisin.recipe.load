@@ -138,6 +138,7 @@ def produce_accessions(data, database):
     headers = ["project_id",
                "accession_id",
                "species",
+               "partition",
                "cell",
                "readType",
                "read_length",
@@ -167,6 +168,7 @@ def produce_accessions(data, database):
         row = (accession['project_id'],
                accession['accession_id'],
                accession['species'],
+               accession['partition'],
                accession['cell'],
                accession['readType'],
                read_length['read_length'],
@@ -264,14 +266,17 @@ def produce_runs(data, database, project_parameters):
 
     headers = ['project_id',
                'run_id',
+               'species',
                'cell',
                'lab',
                'localization',
                'rnaExtract',
                'partition',
+               'readType',
                'read_length',
                'paired',
                 ]
+
     
     template = '\t'.join(['%s'] * len(headers)) + '\n'
     path = os.path.join(database, "runs.csv")
@@ -291,11 +296,13 @@ def produce_runs(data, database, project_parameters):
         read_length = read_lengths.get((project_id, run_id), {})
         row = (run['project_id'],
                run['run_id'],
+               accession['species'],
                run['cell'],
                run['lab'],
                run['localization'],
                run['rnaExtract'],
                run['partition'],
+               accession['readType'],
                run['read_length'],
                run['paired'],
                )
