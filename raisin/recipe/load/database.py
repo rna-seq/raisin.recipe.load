@@ -81,6 +81,7 @@ def produce_files(data, database):
     headers = ["project_id",
                "accession_id",
                "species",
+               "partition",
                "cell",
                "label",
                "readType",
@@ -116,6 +117,7 @@ def produce_files(data, database):
         row = (afile['project_id'],
                afile['accession_id'],
                accession['species'],
+               accession['partition'],
                accession['cell'],
                afile['label'],
                accession['readType'],
@@ -189,11 +191,13 @@ def produce_experiments(data, database, project_parameters):
                "parameter_list",
                "parameter_values",
                "lab",
+               "species",
                "cell",
                "localization",
                "rnaExtract",
                "partition",
                "annotation_version",
+               "readType",
                "read_length",
                "paired",
                "number_of_replicates"
@@ -220,15 +224,17 @@ def produce_experiments(data, database, project_parameters):
         annotation_file_location = replicate['ANNOTATION']
         annotation_version = annotations[annotation_file_location]['version']
         paired = "0"
-        partition = ""
+        partition = accession['partition']
 
         info = {'project_id': accession['project_id'],
                 'lab': accession['lab'],
+                'species': accession['species'],
                 'cell': accession['cell'],
                 'localization': accession['localization'],
                 'rnaExtract': accession['rnaExtract'],
                 'partition': partition,
                 'annotation_version': annotation_version,
+                'readType': accession['readType'],
                 'read_length': read_length['read_length'],
                 'paired': paired
                }
@@ -244,11 +250,13 @@ def produce_experiments(data, database, project_parameters):
                       '-'.join(parameter_list),
                       '-'.join(parameter_values),
                       info['lab'],
+                      info['species'],
                       info['cell'],
                       info['localization'],
                       info['rnaExtract'],
                       info['partition'],
                       info['annotation_version'],
+                      info['readType'],
                       info['read_length'],
                       info['paired'])
         if results.has_key(parameters):
