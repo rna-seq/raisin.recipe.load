@@ -304,13 +304,13 @@ def produce_runs(data, database, project_parameters):
         read_length = read_lengths.get((project_id, run_id), {})
         row = (run['project_id'],
                run['run_id'],
-               accession['species'],
+               accession.get('species', ''),
                run['cell'],
                run['lab'],
                run['localization'],
                run['rnaExtract'],
                run['partition'],
-               accession['readType'],
+               accession.get('readType', ''),
                run['read_length'],
                run['paired'],
                )
