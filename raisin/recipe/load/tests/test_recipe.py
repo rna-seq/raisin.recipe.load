@@ -6,7 +6,11 @@ import os
 import unittest
 import shutil
 from pkg_resources import get_provider
-from raisin.recipe.load import database
+from raisin.recipe.load.database import produce_files
+from raisin.recipe.load.database import produce_accessions
+from raisin.recipe.load.database import produce_experiments
+from raisin.recipe.load.database import produce_runs
+from raisin.recipe.load.database import produce_sqlite3_database
 
 PROVIDER = get_provider('raisin.recipe.load')
 SANDBOX = PROVIDER.get_resource_filename("", 'tests/sandbox/')
@@ -21,11 +25,47 @@ class RecipeTests(unittest.TestCase):
     def setUp(self):  # pylint: disable=C0103
         pass
         
-    def test_1(self):
+    def test_produce_files(self):
         """
-        Test 1
+        Test producing files
         """
-        self.failUnless(database.main(None, None, None) == None)
+        data = None
+        database = None
+        self.failUnless(produce_files(data, database) == None)
+
+    def test_produce_accessions(self):
+        """
+        Test producing accessions
+        """
+        data = None
+        database = None
+        self.failUnless(produce_accessions(data, database) == None)
+
+    def test_produce_experiments(self):
+        """
+        Test producing experiments
+        """
+        data = None
+        database = None
+        project_parameters = None
+        self.failUnless(produce_experiments(data, database, project_parameters) == None)
+
+    def test_produce_runs(self):
+        """
+        Test producing runs
+        """
+        data = None
+        database = None
+        project_parameters = None
+        self.failUnless(produce_runs(data, database, project_parameters) == None)
+
+    def test_produce_sqlite3_database(self):
+        """
+        Test producing the sqlite3 database
+        """
+        data = None
+        database = None
+        self.failUnless(produce_sqlite3_database(data, database) == None)
 
 
 def test_suite():
