@@ -44,7 +44,7 @@ setup(name='raisin.recipe.load',
       namespace_packages=['raisin', 'raisin.recipe'],
       include_package_data=True,
       zip_safe=False,
-      test_suite='grape.recipe.load.tests',
+      test_suite='raisin.recipe.load.tests',
       install_requires=['setuptools',
                         'zc.buildout',
                         # -*- Extra requirements: -*-
