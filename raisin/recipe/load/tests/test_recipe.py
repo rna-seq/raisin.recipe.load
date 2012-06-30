@@ -48,7 +48,7 @@ class RecipeTests(unittest.TestCase):
         database = SANDBOX
         self.failUnless(produce_accessions(data, database) == None)
 
-    def test_produce_experiments(self):
+    def test_produce_experiments_empty(self):
         """
         Test producing experiments
         """
@@ -56,6 +56,43 @@ class RecipeTests(unittest.TestCase):
                 'replicates':[]}
         database = SANDBOX
         project_parameters = None
+        self.failUnless(produce_experiments(data, database, project_parameters) == None)
+
+    def test_produce_experiments_missing_project(self):
+        """
+        Test producing experiments
+        """
+        data = {'experiments':[{'project_id': 'ProjectABC',
+                                'accession_id': '123'
+                               }
+                              ],
+                'accessions':[{'project_id': 'ProjectABC',
+                               'accession_id': '123',
+                               'partition': 'partition',
+                               'lab':'lab',
+                               'species':'species',
+                               'cell':'cell',
+                               'localization':'localization',
+                               'rnaExtract':'rnaExtract',
+                               'readType':'readType'
+                               }
+                              ], 
+                'annotations':[{'file_location': '/tmp/anno',
+                                'version':'v2'
+                               }],
+                'read_length':[{'project_id': 'ProjectABC',
+                                'accession_id': '123',
+                                'read_length':'76'
+                               }
+                              ],
+                'replicates':[{'replicate_id': '123',
+                               'project_id': 'ProjectABC',
+                               'accession_id': '123',
+                               'ANNOTATION': '/tmp/anno'
+                              }]
+               }
+        database = SANDBOX
+        project_parameters = {}
         self.failUnless(produce_experiments(data, database, project_parameters) == None)
 
     def test_produce_runs(self):

@@ -242,10 +242,14 @@ def produce_experiments(data, database, project_parameters):
         parameter_list = []
         parameter_values = []
         
-        for parameter in project_parameters[project_id].split('\n'):
-            parameter_list.append(parameter)
-            parameter_values.append(info[parameter])
-        
+        if project_parameters.has_key(project_id):
+            for parameter in project_parameters[project_id].split('\n'):
+                parameter_list.append(parameter)
+                parameter_values.append(info[parameter])
+        else:
+            # When no parameter list is given, choose read_length as a default
+            parameter_list.append('read_length')
+            parameter_values.append(info['read_length'])
         parameters = (info['project_id'],
                       '-'.join(parameter_list),
                       '-'.join(parameter_values),
