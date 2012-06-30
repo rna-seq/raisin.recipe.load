@@ -29,24 +29,32 @@ class RecipeTests(unittest.TestCase):
         """
         Test producing files
         """
-        data = None
-        database = None
+        data = {'experiments':[],'accessions':[], 
+                'view':[{'project_id':'',
+                        'accession_id':'',
+                        'file_location':''},
+                        ],
+                'files':[],
+                'read_length':[],
+               }
+        database = SANDBOX
         self.failUnless(produce_files(data, database) == None)
 
     def test_produce_accessions(self):
         """
         Test producing accessions
         """
-        data = None
-        database = None
+        data = {'experiments':[],'accessions':[],'read_length':[]}
+        database = SANDBOX
         self.failUnless(produce_accessions(data, database) == None)
 
     def test_produce_experiments(self):
         """
         Test producing experiments
         """
-        data = None
-        database = None
+        data = {'experiments':[],'accessions':[], 'annotations':[],'read_length':[],
+                'replicates':[]}
+        database = SANDBOX
         project_parameters = None
         self.failUnless(produce_experiments(data, database, project_parameters) == None)
 
@@ -54,8 +62,13 @@ class RecipeTests(unittest.TestCase):
         """
         Test producing runs
         """
-        data = None
-        database = None
+        data = {'experiments':[],
+                'accessions':[],
+                'read_length':[],
+                'replicates':[],
+                'runs':[],
+               }
+        database = SANDBOX
         project_parameters = None
         self.failUnless(produce_runs(data, database, project_parameters) == None)
 
@@ -64,7 +77,7 @@ class RecipeTests(unittest.TestCase):
         Test producing the sqlite3 database
         """
         data = None
-        database = None
+        database = SANDBOX
         self.failUnless(produce_sqlite3_database(data, database) == None)
 
 
