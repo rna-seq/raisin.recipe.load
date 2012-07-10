@@ -1,3 +1,12 @@
+1.1.2 (2012-07-10)
+==================
+
+Bug fixes
+---------
+
+- Do not raise an error any more when annotation information is missing, because
+  it is now optional.
+
 1.1.1 (2012-07-05)
 ==================
 

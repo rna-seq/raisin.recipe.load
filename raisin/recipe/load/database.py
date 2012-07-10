@@ -222,7 +222,10 @@ def produce_experiments(data, database, project_parameters):
         accession = accessions[(project_id, accession_id)]
         read_length = read_lengths[(project_id, accession_id)]
         annotation_file_location = replicate['ANNOTATION']
-        annotation_version = annotations[annotation_file_location]['version']
+        if annotation_file_location in annotations:
+            annotation_version = annotations[annotation_file_location]['version']
+        else:
+            annotation_version = ""
         paired = "0"
         partition = accession['partition']
 

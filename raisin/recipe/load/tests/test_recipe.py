@@ -60,7 +60,7 @@ class RecipeTests(unittest.TestCase):
 
     def test_produce_experiments_missing_project(self):
         """
-        Test producing experiments
+        Test producing experiments with missing project
         """
         data = {'experiments':[{'project_id': 'ProjectABC',
                                 'accession_id': '123'
@@ -94,7 +94,43 @@ class RecipeTests(unittest.TestCase):
         database = SANDBOX
         project_parameters = {}
         self.failUnless(produce_experiments(data, database, project_parameters) == None)
-
+        
+    def test_produce_experiments_without_anotation(self):
+        """
+        Test producing experiments with missing annotation
+        """    
+        data = {'experiments':[{'project_id': 'ProjectABC',
+                                'accession_id': '123'
+                               }
+                              ],
+                'accessions':[{'project_id': 'ProjectABC',
+                               'accession_id': '123',
+                               'partition': 'partition',
+                               'lab':'lab',
+                               'species':'species',
+                               'cell':'cell',
+                               'localization':'localization',
+                               'rnaExtract':'rnaExtract',
+                               'readType':'readType'
+                               }
+                              ], 
+                'annotations':[],
+                'read_length':[{'project_id': 'ProjectABC',
+                                'accession_id': '123',
+                                'read_length':'76'
+                               }
+                              ],
+                'replicates':[{'replicate_id': '123',
+                               'project_id': 'ProjectABC',
+                               'accession_id': '123',
+                               'ANNOTATION': '/tmp/anno'
+                              }]
+               }
+        database = SANDBOX
+        project_parameters = {}
+        self.failUnless(produce_experiments(data, database, project_parameters) == None)
+        #annotations[annotation_file_location]['version'] 
+ 
     def test_produce_runs(self):
         """
         Test producing runs
