@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 version = '1.1.2'
 
 long_description = """The raisin.recipe.load package is a Buildout recipe used for
-creating the data warehouse of Raisin, the web application used for publishing the 
+creating the data warehouse of Raisin, the web application used for publishing the
 summary statistics of Grape, a pipeline used for processing and analyzing RNA-Seq data.
 In ETL terms, it loads the extracted and transformed data into the data warehouse."""
 entry_point = 'raisin.recipe.load:Recipe'

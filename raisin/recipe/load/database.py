@@ -244,7 +244,7 @@ def produce_experiments(data, database, project_parameters):
 
         parameter_list = []
         parameter_values = []
-        
+
         if project_parameters.has_key(project_id):
             for parameter in project_parameters[project_id].split('\n'):
                 parameter_list.append(parameter)
@@ -292,7 +292,7 @@ def produce_runs(data, database, project_parameters):
                'paired',
                 ]
 
-    
+
     template = '\t'.join(['%s'] * len(headers)) + '\n'
     path = os.path.join(database, "runs.csv")
     output_file = open(path, "w")
@@ -352,22 +352,22 @@ def produce_sqlite3_database(data, database):
         os.remove(output)
     connection = sqlite3.connect(output)
     cursor = connection.cursor()
-    write_sqlite3_table(cursor, 
-                        os.path.join(database, 'files.csv'), 
+    write_sqlite3_table(cursor,
+                        os.path.join(database, 'files.csv'),
                         'files',
                         ["read_length", "replicate"],
                         )
-    write_sqlite3_table(cursor, 
-                        os.path.join(database, 'accessions.csv'), 
+    write_sqlite3_table(cursor,
+                        os.path.join(database, 'accessions.csv'),
                         'accessions',
                         ["read_length", "replicate"],
                         )
-    write_sqlite3_table(cursor, 
+    write_sqlite3_table(cursor,
                         os.path.join(database, 'experiments.csv'),
                         'experiments',
                         ["read_length", "paired", "number_of_replicates"],
                         )
-    write_sqlite3_table(cursor, 
+    write_sqlite3_table(cursor,
                         os.path.join(database, 'runs.csv'),
                         'runs',
                         [],

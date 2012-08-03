@@ -24,12 +24,12 @@ class RecipeTests(unittest.TestCase):
 
     def setUp(self):  # pylint: disable=C0103
         pass
-        
+
     def test_produce_files(self):
         """
         Test producing files
         """
-        data = {'experiments':[],'accessions':[], 
+        data = {'experiments':[],'accessions':[],
                 'view':[{'project_id':'',
                         'accession_id':'',
                         'file_location':''},
@@ -76,7 +76,7 @@ class RecipeTests(unittest.TestCase):
                                'rnaExtract':'rnaExtract',
                                'readType':'readType'
                                }
-                              ], 
+                              ],
                 'annotations':[{'file_location': '/tmp/anno',
                                 'version':'v2'
                                }],
@@ -94,11 +94,11 @@ class RecipeTests(unittest.TestCase):
         database = SANDBOX
         project_parameters = {}
         self.failUnless(produce_experiments(data, database, project_parameters) == None)
-        
+
     def test_produce_experiments_without_anotation(self):
         """
         Test producing experiments with missing annotation
-        """    
+        """
         data = {'experiments':[{'project_id': 'ProjectABC',
                                 'accession_id': '123'
                                }
@@ -113,7 +113,7 @@ class RecipeTests(unittest.TestCase):
                                'rnaExtract':'rnaExtract',
                                'readType':'readType'
                                }
-                              ], 
+                              ],
                 'annotations':[],
                 'read_length':[{'project_id': 'ProjectABC',
                                 'accession_id': '123',
@@ -129,8 +129,8 @@ class RecipeTests(unittest.TestCase):
         database = SANDBOX
         project_parameters = {}
         self.failUnless(produce_experiments(data, database, project_parameters) == None)
-        #annotations[annotation_file_location]['version'] 
- 
+        #annotations[annotation_file_location]['version']
+
     def test_produce_runs(self):
         """
         Test producing runs
